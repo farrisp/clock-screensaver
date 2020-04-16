@@ -1,0 +1,147 @@
+<!DOCTYPE html><HTML><HEAD><TITLE>Clock Screensaver</TITLE>
+<STYLE>
+html { height: 100%; }
+
+body { 
+  background: #000;
+  color: #fff;
+  font-family: Arial;
+}
+
+
+.screen {
+  width: 1280px;
+  height: 800px;
+}
+
+.datetime {
+  position: absolute;
+}
+
+.date {
+  font-size: 48pt;
+  text-align: center;
+  margin: 5px;
+}
+
+.time {
+  margin: 5px;
+  text-align: center;
+}
+
+.weather {
+  text-align: center;
+  font-size: 16pt;
+  background: white;
+  verticle-align: middle;
+  color: black;
+  border-radius: 5px;
+  padding: 5px;
+}
+
+.Number {
+	position: relative;
+	display: inline-block;
+	background-color: #706F9C;
+	border-radius: 20px;
+	box-shadow: 0 5px 50x #000;
+	color: white;
+	padding: 5px;
+    font-size: 175pt;
+}
+</STYLE>
+</HEAD>
+<BODY scroll="no" onload="startTime()">
+
+<script>
+function startTime() {
+    var today = new Date();
+    var h = today.getHours();
+    var m = today.getMinutes();
+    var s = today.getSeconds();
+	var y = today.getYear();
+	var screenwidth = 1280;
+	var screenheight = 800;
+	var border = 50;
+
+	var days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+	var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+    var d = today.getDate();
+	var day = days[ today.getDay() ];
+	var month = months[ today.getMonth() ];
+
+	var dw = document.getElementById('datetime').offsetWidth;
+	var dh = document.getElementById('datetime').offsetHeight;
+	var xwidth = border + (Math.floor(Math.random() * ((screenwidth - dw) - border)));
+    var xheight = border + (Math.floor(Math.random() * ((screenheight - dh) - border)));
+	//console.log('dw='+dw+' dh='+dh+' x='+xwidth+' y='+xheight);
+    document.getElementById('datetime').style.left = xwidth+'px';
+    document.getElementById('datetime').style.top = xheight+'px';
+	
+	th = "th";
+	if(d==1 | d==21 | d==31)
+	  th="st";
+	if(d==3 | d==23)
+	  th="rd";
+	if(m < 10)
+	  m="0"+m;
+	if(h < 10)
+	  h="0"+h;
+	y = y + 1900;
+    document.getElementById('ttxt').innerHTML = "<DIV CLASS='Number'>" + h + "</DIV>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<DIV CLASS='Number'>" + m + "</DIV>";
+    document.getElementById('dtxt').innerHTML = day + " " + d + th + " " + month + " " + y;
+ 
+    var t = setTimeout(startTime, 10000);	
+}
+
+function loadXMLDoc(XMLname) {
+    var xmlDoc;
+    if (window.XMLHttpRequest)
+    {
+       xmlDoc=new window.XMLHttpRequest();
+       xmlDoc.open("GET",XMLname,false);
+       xmlDoc.send("");
+       return xmlDoc.responseXML;
+    }
+    // IE 5 and IE 6
+    else if (ActiveXObject("Microsoft.XMLDOM"))
+    {
+       xmlDoc=new ActiveXObject("Microsoft.XMLDOM");
+       xmlDoc.async=false;
+       xmlDoc.load(XMLname);
+       return xmlDoc;
+    }
+    console.log("Error loading document!");
+    return null;
+}
+
+function getWeather() {
+	var url = "https://weather-broker-cdn.api.bbci.co.uk/en/forecast/rss/3day/2635156"
+	// change the 7 digit code on the end of the url to your location. find by searching https://www.bbc.co.uk/weather/
+	var weather = loadXMLDoc(url);
+	var wimg = weather.getElementsByTagName("url");
+	var weatherimg = wimg[0].textContent
+	var wtxt = weather.getElementsByTagName("title");
+	var weathertxt = wtxt[2].textContent
+	weathertxt = weathertxt.replace("Today: ", "");
+	weathertxt = weathertxt.replace("Maximum Temperature:", "max");
+	weathertxt = weathertxt.replace("Minimum Temperature:", "min");
+    document.getElementById('weather').innerHTML = "<IMG style='vertical-align:middle' SRC='" + weatherimg + "'>&nbsp;&nbsp;" + weathertxt;
+}
+</script>
+
+<TABLE BORDER=0 WIDTH=100% HEIGHT=100% id="screen"><TR><TD>
+<DIV CLASS="datetime" ID="datetime">
+<div id="ttxt" class="time">Loading...</div>
+<div id="dtxt" class="date">Loading...</div>
+<div id="weather" class="weather">Loading...</div>
+</DIV>
+</TD></TR></TABLE>
+
+<script>
+getWeather();
+setInterval(getWeather, 1800000);
+</script>
+</BODY>
+</HTML>
